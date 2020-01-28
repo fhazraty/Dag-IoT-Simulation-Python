@@ -38,7 +38,9 @@ class TxBlock (CBlock):
         total_in = 0
         total_out = 0
         for tx in self.data:
-            for addr, amt, inx in tx.inputs:
+            inx = -1
+            for addr, amt in tx.inputs:
+                inx = inx + 1
                 total_in = total_in + amt
             for addr, amt in tx.outputs:
                 total_out = total_out + amt
@@ -48,12 +50,15 @@ class TxBlock (CBlock):
             print ("CBlock.is_valid returned False")
             return False
         spends={}
+        print(self.data[0].inputs)
         for tx in self.data:
             if not tx.is_valid():
                 print ("Tx invalid")
                 print (tx)
                 return False
-            for addr,amt,inx in tx.inputs:
+            inx = -1;
+            for addr,amt in tx.inputs:
+                inx = inx + 1
                 if not addr in spends:
                     spends[addr] = amt
                 else:
@@ -62,7 +67,9 @@ class TxBlock (CBlock):
                     found = False
                     count = 0
                     for tx2 in self.data:
-                        for addr2,amt2,inx2 in tx2.inputs:
+                        inx2 = -1
+                        for addr2,amt2 in tx2.inputs:
+                            inx2 = inx2 + 1
                             if addr == addr2 and inx2 == inx-1:
                                 found=True
                             if addr == addr2 and inx2 == inx:
@@ -111,7 +118,9 @@ def getBalance(pu_key,head_block):
     bal = 0.0
     while this_block != None:
         for tx in this_block.data:
-            for addr,amt,inx in tx.inputs:
+            inx = -1
+            for addr,amt in tx.inputs:
+                inx = inx +1
                 if addr == pu_key:
                     bal = bal - amt
             for addr,amt in tx.outputs:
@@ -126,7 +135,9 @@ def getLastTxIndex(pu_key,head_block):
     index = -1
     while this_block != None:
         for tx in this_block.data:
-            for addr,amt,inx in tx.inputs:
+            inx = -1
+            for addr,amt in tx.inputs:
+                inx = inx + 1
                 if addr == pu_key and inx > index:
                     index = inx
         if index != -1:
@@ -171,7 +182,7 @@ if __name__ == "__main__":
     def indexed_input(Tx_inout, public_key, amt, index_map):
         if not public_key in index_map:
             index_map[public_key] = 0            
-        Tx_inout.add_input(public_key, amt, index_map[public_key])
+        Tx_inout.add_input(public_key, amt)
         index_map[public_key] = index_map[public_key] + 1
     
 
@@ -246,6 +257,7 @@ if __name__ == "__main__":
     load_B1 = pickle.load(loadfile)
 
     for b in [root, B1, load_B1, load_B1.previousBlock]:
+        print(b)
         if b.is_valid():
             print ("Success! Valid block")
         else:
