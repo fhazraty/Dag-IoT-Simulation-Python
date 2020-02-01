@@ -51,10 +51,10 @@ class TxBlock (CBlock):
         return total_in, total_out
     def is_valid(self):
         if not super(TxBlock, self).is_valid():
-            print ("CBlock.is_valid returned False")
+            print ("Tangle (CBlock.is_valid) returned False")
             return False
         spends={}
-        print(self.data[0].inputs)
+        #print(self.data[0].inputs)
         for tx in self.data:
             if not tx.is_valid():
                 print ("Tx invalid")
@@ -82,13 +82,13 @@ class TxBlock (CBlock):
                 return self.nonce  
         return None
 
-def saveBlocks(block_list, filename):
+def saveTangles(tangleObj, filename):
     fp = open(filename, "wb")
-    pickle.dump(block_list, fp)
+    pickle.dump(tangleObj, fp)
     fp.close()
     return True
 
-def loadBlocks(filename):
+def loadTangles(filename):
     fin = open(filename, "rb")
     ret = pickle.load(fin)
     fin.close()
@@ -98,6 +98,8 @@ if __name__ == "__main__":
     pr1, pu1 = generate_keys()
     pr2, pu2 = generate_keys()
     pr3, pu3 = generate_keys()
+    pr4, pu4 = generate_keys()
+    pr5, pu5 = generate_keys()
 
     pu_indeces = {}
     
@@ -107,7 +109,7 @@ if __name__ == "__main__":
         Tx_inout.add_input(public_key, amt)
         index_map[public_key] = index_map[public_key] + 1
     
-
+###################Tangle Genesis#####################
     Tx1 = Tx()
     indexed_input(Tx1, pu1, 1, pu_indeces)
     Tx1.sign(pr1)
@@ -134,25 +136,147 @@ if __name__ == "__main__":
     elapsed = time.time() - start
     print("elapsed time: " + str(elapsed) + " s.")
 
-    savefile = open("block.dat", "wb")
+    savefile = open("GenesisTangle.dat", "wb")
     pickle.dump(B1, savefile)
     savefile.close()
 
-    loadfile = open("block.dat" ,"rb")
+    loadfile = open("GenesisTangle.dat" ,"rb")
     load_B1 = pickle.load(loadfile)
 
     for b in [root, B1, load_B1]:
         print(b)
         if b.is_valid():
-            print ("Success! Valid block")
+            print ("Success! Valid Tangle")
         else:
-            print ("ERROR! Bad block")
+            print ("ERROR! Bad Tangle")
 
     if B1.good_nonce():
         print("Success! Nonce is good after save and load!")
     else:
         print("ERROR! Bad nonce after load")
 
+###################Tangle2#####################
+    B2 = TxBlock(B1,B1)
+    Tx2 = Tx()
+    indexed_input(Tx2, pu2, 1, pu_indeces)
+    Tx2.sign(pr2)
+    B2.addTx(Tx2)
+        
+    start = time.time()
+    print(B2.find_nonce())
+    elapsed = time.time() - start
+    print("elapsed time: " + str(elapsed) + " s.")
+
+    savefile = open("Tangle2.dat", "wb")
+    pickle.dump(B2, savefile)
+    savefile.close()
+
+    loadfile = open("Tangle2.dat" ,"rb")
+    load_B2 = pickle.load(loadfile)
+
+    for b in [root, B2, load_B2]:
+        print(b)
+        if b.is_valid():
+            print ("Success! Valid Tangle")
+        else:
+            print ("ERROR! Bad Tangle")
+
+    if B2.good_nonce():
+        print("Success! Nonce is good after save and load!")
+    else:
+        print("ERROR! Bad nonce after load")
+
+###################Tangle3#####################
+    B3 = TxBlock(B1,B1)
+    Tx3 = Tx()
+    indexed_input(Tx3, pu3, 1, pu_indeces)
+    Tx3.sign(pr3)
+    B3.addTx(Tx3)
+        
+    start = time.time()
+    print(B3.find_nonce())
+    elapsed = time.time() - start
+    print("elapsed time: " + str(elapsed) + " s.")
+
+    savefile = open("Tangle3.dat", "wb")
+    pickle.dump(B3, savefile)
+    savefile.close()
+
+    loadfile = open("Tangle3.dat" ,"rb")
+    load_B3 = pickle.load(loadfile)
+
+    for b in [root, B3, load_B3]:
+        print(b)
+        if b.is_valid():
+            print ("Success! Valid Tangle")
+        else:
+            print ("ERROR! Bad Tangle")
+
+    if B3.good_nonce():
+        print("Success! Nonce is good after save and load!")
+    else:
+        print("ERROR! Bad nonce after load")    
+
+###################Tangle4#####################
+    B4 = TxBlock(B2,B3)
+    Tx4 = Tx()
+    indexed_input(Tx4, pu4, 1, pu_indeces)
+    Tx4.sign(pr4)
+    B4.addTx(Tx4)
+        
+    start = time.time()
+    print(B4.find_nonce())
+    elapsed = time.time() - start
+    print("elapsed time: " + str(elapsed) + " s.")
+
+    savefile = open("Tangle4.dat", "wb")
+    pickle.dump(B4, savefile)
+    savefile.close()
+
+    loadfile = open("Tangle4.dat" ,"rb")
+    load_B4 = pickle.load(loadfile)
+
+    for b in [root, B4, load_B4]:
+        print(b)
+        if b.is_valid():
+            print ("Success! Valid Tangle")
+        else:
+            print ("ERROR! Bad Tangle")
+
+    if B4.good_nonce():
+        print("Success! Nonce is good after save and load!")
+    else:
+        print("ERROR! Bad nonce after load")    
+
+###################Tangle5#####################
+    B5 = TxBlock(B2,B3)
+    Tx5 = Tx()
+    indexed_input(Tx5, pu5, 1, pu_indeces)
+    Tx5.sign(pr5)
+    B5.addTx(Tx5)
+        
+    start = time.time()
+    print(B5.find_nonce())
+    elapsed = time.time() - start
+    print("elapsed time: " + str(elapsed) + " s.")
+
+    savefile = open("Tangle5.dat", "wb")
+    pickle.dump(B5, savefile)
+    savefile.close()
+
+    loadfile = open("Tangle5.dat" ,"rb")
+    load_B5 = pickle.load(loadfile)
+
+    for b in [root, B5, load_B5]:
+        print(b)
+        if b.is_valid():
+            print ("Success! Valid Tangle")
+        else:
+            print ("ERROR! Bad Tangle")
+
+    if B5.good_nonce():
+        print("Success! Nonce is good after save and load!")
+    else:
+        print("ERROR! Bad nonce after load")    
 
 
-    
