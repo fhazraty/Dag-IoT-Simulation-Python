@@ -13,30 +13,38 @@ class someClass:
 
 class CBlock:
     data = None
-    previousHash = None
-    previousBlock = None
-    def __init__(self, data, previousBlock):
+    previousTangle1Hash = None
+    previousTangle2Hash = None
+    previousTangle1 = None
+    previousTangle2 = None
+    def __init__(self, data, previousTangle1, previousTangle2):
         self.data = data
-        self.previousBlock = previousBlock
-        if previousBlock != None:
-            self.previousHash = previousBlock.computeHash()
+        self.previousTangle1 = previousTangle1
+        self.previousTangle2 = previousTangle2
+        if previousTangle1 != None:
+            self.previousTangle1Hash = previousTangle1.computeHash()
+        if previousTangle2 != None:
+            self.previousTangle2Hash = previousTangle2.computeHash()
     def computeHash(self):
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
         digest.update(bytes(str(self.data),'utf8'))
-        digest.update(bytes(str(self.previousHash),'utf8'))
+        digest.update(bytes(str(self.previousTangle1Hash),'utf8'))
+        digest.update(bytes(str(self.previousTangle2Hash),'utf8'))
         return digest.finalize()
     def is_valid(self):
-        if self.previousBlock == None:
+        if self.previousTangle1 == None and self.previousTangle2 == None:
+            print("Genesis Tangle detected!")
             return True
-        return self.previousBlock.computeHash() == self.previousHash
+
+        return self.previousTangle1.computeHash() == self.previousTangle1Hash and self.previousTangle2.computeHash() == self.previousTangle2Hash
 
 if __name__ == '__main__':
-    root = CBlock('I am root', None)
-    B1 = CBlock(b'I am a child.', root)
-    B2 = CBlock('I am B1s brother', root)
-    B3 = CBlock(12354, B1)
-    B4 = CBlock(someClass('Hi there!'), B3)
-    B5 = CBlock("Top block", B4)
+    root = CBlock('I am root', None,None)
+    B1 = CBlock(b'I am a child.', root, root)
+    B2 = CBlock('I am B1s brother', root, root)
+    B3 = CBlock(12354, B1,B2)
+    B4 = CBlock(someClass('Hi there!'),B1, B2)
+    B5 = CBlock("Top block", B3,B4)
 
     for b in [B1, B2, B3, B4, B5]:    
         if b.is_valid():
@@ -44,11 +52,6 @@ if __name__ == '__main__':
         else:
             print ("ERROR! Hash is no good.")
 
-    B3.data=12345
-    if B4.is_valid():
-        print ("ERROR! Couldn't detect tampering.")
-    else:
-        print ("Success! Tampering detected.")
         
     print(B4.data)
     B4.data.num = 99999
